@@ -12,7 +12,9 @@ def get_extension(file_name: str) -> str:
     return ext.lower() if ext else "Invalid extension"
 
 
-def scandir(path: str, recursive: bool = False) -> Generator[os.DirEntry, None, None]:
+def scandir(
+    path: str, recursive: bool = False
+) -> Generator[os.DirEntry, None, None]:
     try:
         for entry in os.scandir(path):
             if entry.is_dir():
