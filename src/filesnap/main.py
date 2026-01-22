@@ -8,7 +8,7 @@ from rich.filesize import decimal
 from rich.table import Table
 
 from filesnap.decorators import benchmark
-from filesnap.utils import format_date, get_extension
+from filesnap.utils import format_date, get_extension, scandir
 
 console = Console()
 app = typer.Typer(no_args_is_help=True)
@@ -26,7 +26,9 @@ def scan(
     recursive: Annotated[
         bool,
         typer.Option(
-            "--recursive", "-r", help="Recursive search to list files in subfolders."
+            "--recursive",
+            "-r",
+            help="Recursive search to list files in subfolders.",
         ),
     ] = False,
     pretty: Annotated[
@@ -65,8 +67,12 @@ def scan(
 
 @app.command()
 def count(
-    path: Annotated[str, typer.Argument(help="Path to count")] = os.getcwd(),
-    recursive: Annotated[bool, typer.Option("--recursive", "-r")] = False,
+    path: Annotated[
+        str, typer.Argument(help="Path to count")
+    ] = os.getcwd(),
+    recursive: Annotated[
+        bool, typer.Option("--recursive", "-r")
+    ] = False,
 ):
     """Count all the files by extension in the path selected"""
     info_stats = defaultdict(lambda: {"size": 0, "count": 0})
@@ -88,7 +94,9 @@ def count(
     table.add_column("Count", style="green", justify="right")
 
     sorted_stats = sorted(
-        info_stats.items(), key=lambda item: item[1]["size"], reverse=True
+        info_stats.items(),
+        key=lambda item: item[1]["size"],
+        reverse=True,
     )
 
     for ext, info in sorted_stats:
