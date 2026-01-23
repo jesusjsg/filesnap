@@ -8,7 +8,12 @@ from rich.filesize import decimal
 from rich.table import Table
 
 from filesnap.decorators import benchmark
-from filesnap.utils import format_date, get_extension, scandir
+from filesnap.utils import (
+    format_date,
+    get_extension,
+    scandir,
+    task_progress,
+)
 
 console = Console()
 app = typer.Typer(no_args_is_help=True)
@@ -48,8 +53,11 @@ def scan(
 
     if os.path.isdir(path):
         entries = scandir(path, recursive)
+        track_entries = task_progress(
+            entries, description="Scanning path..."
+        )
 
-        for entry in entries:
+        for entry in track_entries:
             if pretty:
                 file_info = entry.stat()
                 table.add_row(
@@ -60,7 +68,8 @@ def scan(
             count += 1
 
     if pretty:
-        console.print(table)
+        with console.pager():
+            console.print(table)
 
     console.print(f"Total files found: [bold]{count}[/bold]")
 
