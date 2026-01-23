@@ -1,16 +1,18 @@
 import os
 from collections import defaultdict
-from typing import Annotated
+from typing import Annotated, Optional
 
 import typer
 from rich.console import Console
 from rich.filesize import decimal
 from rich.table import Table
 
+from filesnap.constants import DEFAULT_LIST_IGNORED
 from filesnap.decorators import benchmark
 from filesnap.utils import (
     format_date,
     get_extension,
+    get_ignore_list,
     scandir,
     task_progress,
 )
@@ -44,15 +46,25 @@ def scan(
             help="Pretty table to show all the files. Note: this take more time if the path have a lot files.",
         ),
     ] = False,
+    ignore: Annotated[
+        Optional[str],
+        typer.Option(
+            "--ignore",
+            "-i",
+            help=f"Folders to ignore. By the default are those {', '.join(DEFAULT_LIST_IGNORED)}. Use commas to separate each folder.",
+        ),
+    ] = None,
 ):
     """
     Scan all the files in the path
     """
     table = Table("Name", "Size", "Created")
+
+    ignore_list = get_ignore_list(ignore)
     count = 0
 
     if os.path.isdir(path):
-        entries = scandir(path, recursive)
+        entries = scandir(path, recursive, ignore_list)
         track_entries = task_progress(
             entries, description="Scanning path..."
         )
@@ -82,14 +94,27 @@ def count(
     recursive: Annotated[
         bool, typer.Option("--recursive", "-r")
     ] = False,
+    ignore: Annotated[
+        Optional[str],
+        typer.Option(
+            "--ignore",
+            "-i",
+            help=f"Folders to ignore. By the default are those {', '.join(DEFAULT_LIST_IGNORED)}. Use commas to separate each folder.",
+        ),
+    ] = None,
 ):
     """Count all the files by extension in the path selected"""
+    ignore_list = get_ignore_list(ignore)
     info_stats = defaultdict(lambda: {"size": 0, "count": 0})
 
     if os.path.isdir(path):
-        entries = scandir(path, recursive)
+        entries = scandir(path, recursive, ignore_list)
 
-        for entry in entries:
+        track_entries = task_progress(
+            entries, description="Scanning extensions..."
+        )
+
+        for entry in track_entries:
             if entry.is_file():
                 ext = get_extension(entry.name)
                 file_info = entry.stat()
