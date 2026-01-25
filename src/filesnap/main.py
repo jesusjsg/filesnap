@@ -8,14 +8,13 @@ from rich.filesize import decimal
 from rich.table import Table
 
 from filesnap.constants import DEFAULT_LIST_IGNORED
-from filesnap.decorators import benchmark
-from filesnap.utils import (
-    format_date,
+from filesnap.utils.decorators import benchmark
+from filesnap.utils.filesystem import (
     get_extension,
     get_ignore_list,
     scandir,
-    task_progress,
 )
+from filesnap.utils.formatting import format_date, task_progress
 
 console = Console()
 app = typer.Typer(no_args_is_help=True)

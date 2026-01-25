@@ -1,14 +1,7 @@
 import os
-import time
-from typing import Generator, Iterable, Optional
-
-from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
+from typing import Generator, Optional
 
 from filesnap.constants import DEFAULT_LIST_IGNORED
-
-
-def format_date(date: int | float) -> str:
-    return str(time.ctime(date))
 
 
 def get_extension(file_name: str) -> str:
@@ -44,19 +37,3 @@ def scandir(
                 yield entry
     except PermissionError:
         pass
-
-
-def task_progress(
-    iterable: Iterable, description: str = "Processing..."
-) -> Iterable:
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(bar_width=40),
-        transient=True,
-    ) as progress:
-        task = progress.add_task(description=description, total=None)
-
-        for item in iterable:
-            yield item
-            progress.update(task, advance=1)
