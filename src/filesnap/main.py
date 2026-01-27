@@ -13,6 +13,7 @@ from filesnap.utils.filesystem import (
     get_extension,
     get_ignore_list,
     scandir,
+    validate_path_exist,
 )
 from filesnap.utils.formatting import format_date, task_progress
 
@@ -57,32 +58,36 @@ def scan(
     """
     Scan all the files in the path
     """
-    table = Table("Name", "Size", "Created")
+
+    validate_path_exist(path)
 
     ignore_list = get_ignore_list(ignore)
+
+    entries = scandir(path, recursive, ignore_list)
     count = 0
 
-    if os.path.isdir(path):
-        entries = scandir(path, recursive, ignore_list)
-        track_entries = task_progress(
-            entries, description="Scanning path..."
-        )
+    table = Table("Name", "Size", "Created") if pretty else None
 
-        for entry in track_entries:
-            if pretty:
-                file_info = entry.stat()
-                table.add_row(
-                    entry.name,
-                    decimal(file_info.st_size),
-                    format_date(file_info.st_ctime),
-                )
-            count += 1
+    track_entries = task_progress(
+        entries, description="Scanning path..."
+    )
 
-    if pretty:
+    for entry in track_entries:
+        count += 1
+        if pretty and table is not None:
+            file_info = entry.stat()
+            table.add_row(
+                entry.name,
+                decimal(file_info.st_size),
+                format_date(file_info.st_ctime),
+            )
+
+    # TODO: Optimize the table when the data entry is too long (add streaming view or limit)
+    if pretty and table:
         with console.pager():
             console.print(table)
 
-    console.print(f"Total files found: [bold]{count}[/bold]")
+    console.print(f"{count} files found in [green]{path}[/green]")
 
 
 @app.command()

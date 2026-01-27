@@ -1,6 +1,9 @@
 import os
 from typing import Generator, Optional
 
+import typer
+from rich import print
+
 from filesnap.constants import DEFAULT_LIST_IGNORED
 
 
@@ -37,3 +40,11 @@ def scandir(
                 yield entry
     except PermissionError:
         pass
+
+
+def validate_path_exist(path: str) -> None:
+    if not os.path.isdir(path):
+        print(
+            f"[bold red]Error:[/bold red] The path [yellow]{path}[/yellow] donsn't exist!"
+        )
+        raise typer.Exit(code=1)
