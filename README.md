@@ -11,7 +11,7 @@ Scan all the files in the path.
 **Usage:**
 
 ```bash
-filesnap scan [OPTIONS] [PATH]
+filesnap scan [PATH] [OPTIONS]
 ```
 
 **Arguments:**
@@ -22,4 +22,21 @@ filesnap scan [OPTIONS] [PATH]
 
 *   `--recursive`: Recursive search to list files in subfolders.
 *   `--pretty`: Pretty table to show all the files. Note: this take more time if the path have a lot files.
-*   `--help`: Show this message and exit.
+
+### `count`
+
+Count all the files by extension.
+
+**Usage:**
+
+```bash
+filesnap count [PATH] [OPTIONS] 
+```
+
+**Arguments:**
+
+* `[PATH]`: Path to count. [default: current directory]
+
+**Options:**
+
+*   `--recursive`: Recursive search to list files in subfolders.
