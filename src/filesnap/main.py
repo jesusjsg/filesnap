@@ -32,11 +32,7 @@ def scan(
     ] = os.getcwd(),
     recursive: Annotated[
         bool,
-        typer.Option(
-            "--recursive",
-            "-r",
-            help="Recursive search to list files in subfolders.",
-        ),
+        typer.Option("--recursive", "-r", help="Recursive search."),
     ] = False,
     pretty: Annotated[
         bool,
@@ -96,7 +92,8 @@ def count(
         str, typer.Argument(help="Path to count")
     ] = os.getcwd(),
     recursive: Annotated[
-        bool, typer.Option("--recursive", "-r")
+        bool,
+        typer.Option("--recursive", "-r", help="Recursive search."),
     ] = False,
     ignore: Annotated[
         Optional[str],
@@ -108,23 +105,25 @@ def count(
     ] = None,
 ):
     """Count all the files by extension in the path selected"""
+
+    validate_path_exist(path)
+
     ignore_list = get_ignore_list(ignore)
     info_stats = defaultdict(lambda: {"size": 0, "count": 0})
 
-    if os.path.isdir(path):
-        entries = scandir(path, recursive, ignore_list)
+    entries = scandir(path, recursive, ignore_list)
 
-        track_entries = task_progress(
-            entries, description="Scanning extensions..."
-        )
+    track_entries = task_progress(
+        entries, description="Scanning extensions..."
+    )
 
-        for entry in track_entries:
-            if entry.is_file():
-                ext = get_extension(entry.name)
-                file_info = entry.stat()
+    for entry in track_entries:
+        if entry.is_file():
+            ext = get_extension(entry.name)
+            file_info = entry.stat()
 
-                info_stats[ext]["size"] += file_info.st_size
-                info_stats[ext]["count"] += 1
+            info_stats[ext]["size"] += file_info.st_size
+            info_stats[ext]["count"] += 1
 
     table = Table(title=f"File statistics for {path}")
     table.add_column("Extension", style="cyan")
