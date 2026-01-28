@@ -20,6 +20,8 @@ from filesnap.utils.formatting import format_date, task_progress
 console = Console()
 app = typer.Typer(no_args_is_help=True)
 
+# TODO: Each command in the main.py file will be refactored into different files.
+
 
 @app.command()
 @benchmark
@@ -140,3 +142,19 @@ def count(
         table.add_row(ext, decimal(info["size"]), str(info["count"]))
 
     console.print(table)
+
+
+@app.command()
+def clean(
+    path: str,
+    ignore: Annotated[str, typer.Option("--ignore", "-i")],
+    # TODO: Ignore method will be added to exclude files or dirs
+):
+    """Clean the path entered"""
+    validate_path_exist(path)
+
+    delete = typer.confirm(
+        "Are you sure you want to delete the path content?", abort=True
+    )
+
+    # TODO: Add the logic to remove the files or dirs even both
