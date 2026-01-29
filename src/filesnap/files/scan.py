@@ -18,6 +18,8 @@ from filesnap.utils.formatting import format_date, task_progress
 app = typer.Typer()
 console = Console()
 
+MAX_TABLE_ROWS = 1000
+
 
 @app.command()
 @benchmark
@@ -54,7 +56,6 @@ def scan(
     """
 
     validate_path_exist(path)
-
     ignore_list = get_ignore_list(ignore)
 
     entries = scandir(path, recursive, ignore_list)
@@ -69,16 +70,21 @@ def scan(
     for entry in track_entries:
         count += 1
         if pretty and table is not None:
-            file_info = entry.stat()
-            table.add_row(
-                entry.name,
-                decimal(file_info.st_size),
-                format_date(file_info.st_ctime),
-            )
+            if count <= MAX_TABLE_ROWS:
+                file_info = entry.stat()
+                table.add_row(
+                    entry.name,
+                    decimal(file_info.st_size),
+                    format_date(file_info.st_ctime),
+                )
 
-    # TODO: Optimize the table when the data entry is too long (add streaming view or limit)
     if pretty and table:
-        with console.pager():
+        with console.pager(styles=True):
             console.print(table)
+
+            if count > MAX_TABLE_ROWS:
+                console.print(
+                    f"\n:warning:[yellow]Warning[/yellow]: Table output truncated. Showing first {MAX_TABLE_ROWS}"
+                )
 
     console.print(f"{count} files found in [green]{path}[/green]")
