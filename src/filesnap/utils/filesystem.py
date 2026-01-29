@@ -12,30 +12,36 @@ def get_extension(file_name: str) -> str:
     return ext.lower() if ext else "Invalid extension"
 
 
-def get_ignore_list(ignore_name: Optional[str]) -> list[str]:
-    final_ignores = DEFAULT_LIST_IGNORED
+def get_ignore_list(ignore_name: Optional[str]) -> set[str]:
+    final_ignores = set(DEFAULT_LIST_IGNORED)
 
     if ignore_name:
         user_list = [item.strip() for item in ignore_name.split(",")]
-        final_ignores = list(set(final_ignores + user_list))
+        final_ignores.update(user_list)
     return final_ignores
 
 
 def scandir(
-    path: str, recursive: bool = False, ignore_list: list = None
+    path: str, recursive: bool = False, ignore_list: set = None
 ) -> Generator[os.DirEntry, None, None]:
     if ignore_list is None:
-        ignore_list = DEFAULT_LIST_IGNORED
+        ignore_list = set()
 
     try:
         for entry in os.scandir(path):
-            if entry.is_dir() and entry.name in ignore_list:
+            if entry.name in ignore_list or any(
+                entry.name.endswith(ext)
+                for ext in ignore_list
+                if ext.startswith(".")
+            ):
                 continue
+
             if entry.is_dir():
                 if recursive:
                     yield from scandir(
                         entry.path, recursive, ignore_list
                     )
+                yield entry
             else:
                 yield entry
     except PermissionError:
