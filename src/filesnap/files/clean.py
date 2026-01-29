@@ -22,6 +22,9 @@ def clean(
     recursive: Annotated[
         bool, typer.Option("--recursive", "-r")
     ] = False,
+    pattern: Annotated[
+        Optional[str], typer.Option("--pattern", "-p")
+    ] = None,
     ignore: Annotated[
         Optional[str], typer.Option("--ignore", "-i")
     ] = None,
@@ -45,22 +48,26 @@ def clean(
         "Are you sure you want to delete the content of the path?",
         abort=True,
     )
-    ignore_list = get_ignore_list(ignore)
 
+    ignore_list = get_ignore_list(ignore)
     entries = scandir(path, recursive, ignore_list)
 
     track_entries = task_progress(
         entries, description="Cleaning content..."
     )
-    for entry in track_entries:
-        if entry.is_file() or entry.is_symlink():
-            os.remove(entry)
-        elif entry.is_dir():
-            try:
-                os.rmdir(entry.path)
-            except OSError:
-                pass
 
+    for entry in track_entries:
+        if pattern and pattern not in entry.name:
+            continue
+
+        try:
+            if entry.is_file() or entry.is_symlink():
+                os.remove(entry)
+            elif entry.is_dir():
+                if not pattern:
+                    os.rmdir(entry.path)
+        except OSError:
+            pass
     print(
         "[green]The content of the path was removed successfully![/green]"
     )
