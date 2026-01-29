@@ -1,10 +1,10 @@
 import typer
-from rich.console import Console
+from rich import print
 
 app = typer.Typer()
-console = Console()
 
 
 @app.command()
 def version():
-    console.print(":pushpin: Filesnap version [green]0.1.0[/green]")
+    """Get the current version"""
+    print(":pushpin: Filesnap version [green]0.1.0[/green]")

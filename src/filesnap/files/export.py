@@ -22,6 +22,7 @@ def export(
     # TODO: Apply logic to generate the file in multiples formats (csv, json, txt, etc...). Actually only txt
     type: Annotated[Optional[str], typer.Option("--type", "-t")] = None,
 ):
+    """Export the filename to a txt file"""
     validate_path_exist(path)
 
     if output is None:
