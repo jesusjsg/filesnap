@@ -1,7 +1,7 @@
 import time
 from typing import Iterable
 
-from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 
 def format_date(date: int | float) -> str:
@@ -14,7 +14,6 @@ def task_progress(
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
-        BarColumn(bar_width=40),
         transient=True,
     ) as progress:
         task = progress.add_task(description=description, total=None)
