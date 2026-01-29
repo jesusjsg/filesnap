@@ -2,14 +2,12 @@ from pathlib import Path
 from typing import Annotated, Optional
 
 import typer
-from rich.console import Console
+from rich import print
 
 from filesnap.utils.filesystem import scandir, validate_path_exist
 from filesnap.utils.formatting import task_progress
 
 app = typer.Typer()
-
-console = Console()
 
 
 @app.command()
@@ -41,4 +39,4 @@ def export(
             file.write(file_name + "\n")
     file.close()
 
-    console.print("[green]File generated successfully[/green] :star:")
+    print("[green]File generated successfully[/green] :star:")

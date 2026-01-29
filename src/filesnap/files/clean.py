@@ -3,7 +3,7 @@ import shutil
 from typing import Annotated, Optional
 
 import typer
-from rich.console import Console
+from rich import print
 
 from filesnap.utils.filesystem import (
     get_ignore_list,
@@ -13,7 +13,6 @@ from filesnap.utils.filesystem import (
 from filesnap.utils.formatting import task_progress
 
 app = typer.Typer()
-console = Console()
 
 
 @app.command()

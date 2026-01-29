@@ -2,6 +2,7 @@ import os
 from typing import Annotated, Optional
 
 import typer
+from rich import print
 from rich.console import Console
 from rich.filesize import decimal
 from rich.table import Table
@@ -83,8 +84,8 @@ def scan(
             console.print(table)
 
             if count > MAX_TABLE_ROWS:
-                console.print(
+                print(
                     f"\n:warning:[yellow]Warning[/yellow]: Table output truncated. Showing first {MAX_TABLE_ROWS}"
                 )
 
-    console.print(f"{count} files found in [green]{path}[/green]")
+    print(f"{count} files found in [green]{path}[/green]")
