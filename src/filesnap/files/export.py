@@ -1,3 +1,5 @@
+import csv
+import re
 from pathlib import Path
 from typing import Annotated, Optional
 
@@ -13,31 +15,57 @@ app = typer.Typer()
 @app.command()
 def export(
     path: str,
+    # TODO: Apply logic to generate the file in multiples formats (csv, json, txt, etc...). Actually only txt
+    type: Annotated[str, typer.Option("--type", "-t")],
     recursive: Annotated[
         bool, typer.Option("--recursive", "-r")
     ] = False,
     output: Annotated[
         Optional[str], typer.Option("--output", "-o")
     ] = None,
-    # TODO: Apply logic to generate the file in multiples formats (csv, json, txt, etc...). Actually only txt
-    type: Annotated[Optional[str], typer.Option("--type", "-t")] = None,
+    format: Annotated[
+        Optional[str], typer.Option("--format", "-f")
+    ] = None,
 ):
     """Export the filename to a txt file"""
     validate_path_exist(path)
 
     if output is None:
-        output = f"{Path(path).name}.txt"  # Using path to get more easily the last folder name
+        output = f"{Path(path).name}.{type}"
 
     entries = scandir(path, recursive)
     track_entries = task_progress(
-        entries, description="Generating file..."
+        entries, description=f"Generating {type} file..."
     )
 
-    with open(output, "w") as file:
-        file.write("codigo_articulos\n")
+    # TODO: add the another types files and refactor to a function
+    with open(output, "w", newline="") as file:
         for entry in track_entries:
-            file_name = entry.name.split(".")[0]
-            file.write(file_name + "\n")
-    file.close()
+            if type == "txt":
+                file.write("file_name\n")
+                for entry in track_entries:
+                    if not entry.is_file() or entry.name.startswith(
+                        "."
+                    ):
+                        continue
+                    file_name = Path(entry.name).stem
+                    if format:
+                        file_name = re.sub(format, "", file_name)
+                    file.write(f"{file_name}\n")
 
-    print("[green]File generated successfully[/green] :star:")
+            if type == "csv":
+                writer = csv.writer(file)
+                writer.writerow(["file_name"])
+                for entry in track_entries:
+                    if not entry.is_file() or entry.name.startswith(
+                        "."
+                    ):
+                        continue
+                    file_name = Path(entry.name).stem
+                    if format:
+                        file_name = re.sub(format, "", file_name)
+                    writer.writerow([file_name])
+
+    print(
+        f"[green]{type.upper()} file generated successfully[/green] :star:"
+    )
