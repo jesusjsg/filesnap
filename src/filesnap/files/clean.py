@@ -24,17 +24,21 @@ def clean(
     pattern: Annotated[
         Optional[str], typer.Option("--pattern", "-p")
     ] = None,
+    # TODO: This option will take the files that finish with the extension entered
+    ext: Annotated[
+        Optional[str], typer.Option("--extension", "-e")
+    ] = None,
     ignore: Annotated[
         Optional[str], typer.Option("--ignore", "-i")
     ] = None,
-    all: Annotated[bool, typer.Option("-all", "-a")] = False,
+    force: Annotated[bool, typer.Option("--force", "-f")] = False,
 ):
-    """Clean the path entered"""
+    """Clean the content of the path"""
     validate_path_exist(path)
 
-    if all:
+    if force:
         if typer.confirm(
-            f"Are you sure you want to delete {path}?",
+            f"Are you sure you want to delete the entire {path}?",
             abort=True,
         ):
             shutil.rmtree(path)
