@@ -12,26 +12,26 @@ def get_extension(file_name: str) -> str:
     return ext.lower() if ext else "Invalid extension"
 
 
-def get_ignore_list(ignore_name: Optional[str]) -> set[str]:
+def get_exclude_list(exclude_name: Optional[str]) -> set[str]:
     final_ignores = set(DEFAULT_LIST_IGNORED)
 
-    if ignore_name:
-        user_list = [item.strip() for item in ignore_name.split(",")]
+    if exclude_name:
+        user_list = [item.strip() for item in exclude_name.split(",")]
         final_ignores.update(user_list)
     return final_ignores
 
 
 def scandir(
-    path: str, recursive: bool = False, ignore_list: set = None
+    path: str, recursive: bool = False, exclude_name: set = None
 ) -> Generator[os.DirEntry, None, None]:
-    if ignore_list is None:
-        ignore_list = set()
+    if exclude_name is None:
+        exclude_name = set()
 
     try:
         for entry in os.scandir(path):
-            if entry.name in ignore_list or any(
+            if entry.name in exclude_name or any(
                 entry.name.endswith(ext)
-                for ext in ignore_list
+                for ext in exclude_name
                 if ext.startswith(".")
             ):
                 continue
@@ -39,7 +39,7 @@ def scandir(
             if entry.is_dir():
                 if recursive:
                     yield from scandir(
-                        entry.path, recursive, ignore_list
+                        entry.path, recursive, exclude_name
                     )
                 yield entry
             else:

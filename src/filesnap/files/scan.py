@@ -1,5 +1,5 @@
 import os
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich import print
@@ -7,10 +7,8 @@ from rich.console import Console
 from rich.filesize import decimal
 from rich.table import Table
 
-from filesnap.constants import DEFAULT_LIST_IGNORED
-from filesnap.utils.decorators import benchmark
 from filesnap.utils.filesystem import (
-    get_ignore_list,
+    get_exclude_list,
     scandir,
     validate_path_exist,
 )
@@ -23,13 +21,9 @@ MAX_TABLE_ROWS = 1000
 
 
 @app.command()
-@benchmark
 def scan(
     path: Annotated[
-        str,
-        typer.Argument(
-            help="Path to scan.",
-        ),
+        str, typer.Argument(help="Path to count")
     ] = os.getcwd(),
     recursive: Annotated[
         bool,
@@ -43,21 +37,14 @@ def scan(
             help="Pretty table to show all the files. Note: this take more time if the path have a lot files.",
         ),
     ] = False,
-    ignore: Annotated[
-        Optional[str],
-        typer.Option(
-            "--ignore",
-            "-i",
-            help=f"Folders to ignore. By the default are those {', '.join(DEFAULT_LIST_IGNORED)}. Use commas to separate each folder.",
-        ),
-    ] = None,
+    exclude: Annotated[str, typer.Option()] = "",
 ):
     """
     Scan all the files in the path
     """
 
     validate_path_exist(path)
-    ignore_list = get_ignore_list(ignore)
+    ignore_list = get_exclude_list(exclude)
 
     entries = scandir(path, recursive, ignore_list)
     count = 0

@@ -1,16 +1,15 @@
 import os
 from collections import defaultdict
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.console import Console
 from rich.filesize import decimal
 from rich.table import Table
 
-from filesnap.constants import DEFAULT_LIST_IGNORED
 from filesnap.utils.filesystem import (
+    get_exclude_list,
     get_extension,
-    get_ignore_list,
     scandir,
     validate_path_exist,
 )
@@ -29,20 +28,13 @@ def count(
         bool,
         typer.Option("--recursive", "-r", help="Recursive search."),
     ] = False,
-    ignore: Annotated[
-        Optional[str],
-        typer.Option(
-            "--ignore",
-            "-i",
-            help=f"Folders to ignore. By the default are those {', '.join(DEFAULT_LIST_IGNORED)}. Use commas to separate each folder.",
-        ),
-    ] = None,
+    exclude: Annotated[str, typer.Option()] = "",
 ):
     """Count all the files by extension in the path selected"""
 
     validate_path_exist(path)
 
-    ignore_list = get_ignore_list(ignore)
+    ignore_list = get_exclude_list(exclude)
     info_stats = defaultdict(lambda: {"size": 0, "count": 0})
 
     entries = scandir(path, recursive, ignore_list)

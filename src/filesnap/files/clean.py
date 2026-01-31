@@ -6,7 +6,7 @@ import typer
 from rich import print
 
 from filesnap.utils.filesystem import (
-    get_ignore_list,
+    get_exclude_list,
     scandir,
     validate_path_exist,
 )
@@ -28,9 +28,7 @@ def clean(
     ext: Annotated[
         Optional[str], typer.Option("--extension", "-e")
     ] = None,
-    ignore: Annotated[
-        Optional[str], typer.Option("--ignore", "-i")
-    ] = None,
+    exclude: Annotated[str, typer.Option()] = "",
     force: Annotated[bool, typer.Option("--force", "-f")] = False,
 ):
     """Clean the content of the path"""
@@ -52,7 +50,7 @@ def clean(
         abort=True,
     )
 
-    ignore_list = get_ignore_list(ignore)
+    ignore_list = get_exclude_list(exclude)
     entries = scandir(path, recursive, ignore_list)
 
     track_entries = task_progress(
