@@ -1,5 +1,5 @@
 import os
-from typing import Annotated
+from typing import Annotated, List, Optional
 
 import typer
 from rich import print
@@ -9,6 +9,7 @@ from rich.table import Table
 
 from filesnap.utils.filesystem import (
     get_exclude_list,
+    get_extension_list,
     scandir,
     validate_path_exist,
 )
@@ -34,19 +35,26 @@ def scan(
         typer.Option(
             "--pretty",
             "-p",
-            help="Pretty table to show all the files. Note: this take more time if the path have a lot files.",
         ),
     ] = False,
-    exclude: Annotated[str, typer.Option()] = "",
+    exclude: Annotated[Optional[List[str]], typer.Option()] = None,
+    extensions: Annotated[
+        Optional[List[str]], typer.Option("--ext", "-e")
+    ] = None,
 ):
     """
     Scan all the files in the path
     """
 
     validate_path_exist(path)
-    ignore_list = get_exclude_list(exclude)
 
-    entries = scandir(path, recursive, ignore_list)
+    scan_options = {
+        "exclude": get_exclude_list(exclude),
+        "extensions": get_extension_list(extensions),
+    }
+    print(scan_options.items())
+
+    entries = scandir(path, recursive, **scan_options)
     count = 0
 
     table = Table("Name", "Size", "Created") if pretty else None
