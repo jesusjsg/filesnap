@@ -1,12 +1,13 @@
 import os
 import shutil
-from typing import Annotated, Optional
+from typing import Annotated, List, Optional
 
 import typer
 from rich import print
 
 from filesnap.utils.filesystem import (
     get_exclude_list,
+    get_extension_list,
     scandir,
     validate_path_exist,
 )
@@ -24,11 +25,10 @@ def clean(
     pattern: Annotated[
         Optional[str], typer.Option("--pattern", "-p")
     ] = None,
-    # TODO: This option will take the files that finish with the extension entered
-    ext: Annotated[
-        Optional[str], typer.Option("--extension", "-e")
+    extensions: Annotated[
+        Optional[List[str]], typer.Option("--ext", "-e")
     ] = None,
-    exclude: Annotated[str, typer.Option()] = "",
+    exclude: Annotated[Optional[List[str]], typer.Option()] = None,
     force: Annotated[bool, typer.Option("--force", "-f")] = False,
 ):
     """Clean the content of the path"""
@@ -50,8 +50,12 @@ def clean(
         abort=True,
     )
 
-    ignore_list = get_exclude_list(exclude)
-    entries = scandir(path, recursive, ignore_list)
+    scan_options = {
+        "exclude": get_exclude_list(exclude),
+        "extensions": get_extension_list(extensions),
+    }
+
+    entries = scandir(path, recursive, **scan_options)
 
     track_entries = task_progress(
         entries, description="Cleaning content..."
@@ -69,6 +73,7 @@ def clean(
                     os.rmdir(entry.path)
         except OSError:
             pass
+
     print(
         "[green]The content of the path was removed successfully![/green]"
     )

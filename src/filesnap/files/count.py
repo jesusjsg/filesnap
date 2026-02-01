@@ -1,6 +1,6 @@
 import os
 from collections import defaultdict
-from typing import Annotated
+from typing import Annotated, List, Optional
 
 import typer
 from rich.console import Console
@@ -28,16 +28,19 @@ def count(
         bool,
         typer.Option("--recursive", "-r", help="Recursive search."),
     ] = False,
-    exclude: Annotated[str, typer.Option()] = "",
+    exclude: Annotated[Optional[List[str]], typer.Option()] = None,
 ):
     """Count all the files by extension in the path selected"""
 
     validate_path_exist(path)
 
-    ignore_list = get_exclude_list(exclude)
+    scan_options = {
+        "exclude": get_exclude_list(exclude),
+    }
+
     info_stats = defaultdict(lambda: {"size": 0, "count": 0})
 
-    entries = scandir(path, recursive, ignore_list)
+    entries = scandir(path, recursive, **scan_options)
 
     track_entries = task_progress(
         entries, description="Scanning extensions..."
