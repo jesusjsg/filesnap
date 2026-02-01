@@ -30,25 +30,29 @@ def clean(
     ] = None,
     exclude: Annotated[Optional[List[str]], typer.Option()] = None,
     force: Annotated[bool, typer.Option("--force", "-f")] = False,
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", "--dry")
+    ] = False,
 ):
     """Clean the content of the path"""
     validate_path_exist(path)
 
-    if force:
-        if typer.confirm(
-            f"Are you sure you want to delete the entire {path}?",
-            abort=True,
-        ):
+    if not dry_run:
+        if force:
+            typer.confirm(
+                f"Are you sure you want to delete the entire {path}?",
+                abort=True,
+            )
             shutil.rmtree(path)
-        print(
-            f"[green]The directory {path} was removed successfully![/green]"
-        )
-        raise typer.Exit()
+            print(
+                f"[green]The directory {path} was removed successfully![/green]"
+            )
+            raise typer.Exit()
 
-    typer.confirm(
-        "Are you sure you want to delete the content of the path?",
-        abort=True,
-    )
+        typer.confirm(
+            "Are you sure you want to delete the content of the path?",
+            abort=True,
+        )
 
     scan_options = {
         "exclude": get_exclude_list(exclude),
@@ -61,11 +65,20 @@ def clean(
         entries, description="Cleaning content..."
     )
 
+    count = 0
+
     for entry in track_entries:
+        count += 1
         if pattern and pattern not in entry.name:
             continue
 
         try:
+            if dry_run:
+                print(
+                    f"[yellow][DRY RUN][/yellow] Would remove: [white]{entry.path}[/white]."
+                )
+                continue
+
             if entry.is_file() or entry.is_symlink():
                 os.remove(entry)
             elif entry.is_dir():
@@ -73,7 +86,9 @@ def clean(
                     os.rmdir(entry.path)
         except OSError:
             pass
-
-    print(
-        "[green]The content of the path was removed successfully![/green]"
+    message = (
+        f"Dry run completed! {count} total files affected"
+        if dry_run
+        else "The content of the path was removed successfully!"
     )
+    print(f"[green]{message}[/green]")
