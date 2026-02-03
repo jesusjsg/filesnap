@@ -22,8 +22,8 @@ def clean(
     recursive: Annotated[
         bool, typer.Option("--recursive", "-r")
     ] = False,
-    pattern: Annotated[
-        Optional[str], typer.Option("--pattern", "-p")
+    contain: Annotated[
+        Optional[str], typer.Option("--contain", "-c")
     ] = None,
     extensions: Annotated[
         Optional[List[str]], typer.Option("--ext", "-e")
@@ -57,6 +57,7 @@ def clean(
     scan_options = {
         "exclude": get_exclude_list(exclude),
         "extensions": get_extension_list(extensions),
+        "contain": contain,
     }
 
     entries = scandir(path, recursive, **scan_options)
@@ -69,20 +70,17 @@ def clean(
 
     for entry in track_entries:
         count += 1
-        if pattern and pattern not in entry.name:
-            continue
-
         try:
             if dry_run:
                 print(
-                    f"[yellow][DRY RUN][/yellow] Would remove: [white]{entry.path}[/white]."
+                    f"[yellow][DRY RUN][/yellow] Would remove: [white]{entry.path}[/white]"
                 )
                 continue
 
             if entry.is_file() or entry.is_symlink():
                 os.remove(entry)
             elif entry.is_dir():
-                if not pattern:
+                if not contain:
                     os.rmdir(entry.path)
         except OSError:
             pass
