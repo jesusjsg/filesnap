@@ -22,9 +22,7 @@ def clean(
     recursive: Annotated[
         bool, typer.Option("--recursive", "-r")
     ] = False,
-    contain: Annotated[
-        Optional[str], typer.Option("--contain", "-c")
-    ] = None,
+    contain: Annotated[str, typer.Option("--contain", "-c")] = "",
     extensions: Annotated[
         Optional[List[str]], typer.Option("--ext", "-e")
     ] = None,

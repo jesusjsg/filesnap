@@ -41,7 +41,7 @@ def scandir(
 ) -> Generator[os.DirEntry, None, None]:
     exclude_names = kwargs.get("exclude", set())
     valid_extensions = kwargs.get("extensions", set())
-    contain = kwargs.get("contain", str)
+    contain = kwargs.get("contain", "")
 
     try:
         for entry in os.scandir(path):
