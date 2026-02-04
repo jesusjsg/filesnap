@@ -43,6 +43,7 @@ def export(
 
     # TODO: add the another types files and refactor to a function
     with open(output, "w", newline="") as file:
+        # BUG: firsts elements are being ignored
         for entry in track_entries:
             if type == "txt":
                 file.write(f"{column}\n")
