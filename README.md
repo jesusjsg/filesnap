@@ -1,42 +1,70 @@
 # filesnap
 
-A simple CLI to manage files.
+`filesnap` is a command-line tool for managing files and directories.
 
 ## Commands
 
-### `scan`
+### `filesnap scan`
 
-Scan all the files in the path.
+Scans all the files in the path.
 
-**Usage:**
+| Argument | Description | Default |
+|---|---|---|
+| `path` | Path to scan | Current directory |
 
-```bash
-filesnap scan [PATH] [OPTIONS]
-```
+| Option | Alias | Description |
+|---|---|---|
+| `--recursive` | `-r` | Recursive search. |
+| `--pretty` | `-p` | Pretty print the output in a table. |
+| `--exclude` | | Exclude files/directories from scanning. |
+| `--ext` | `-e` | Scan only files with these extensions. |
 
-**Arguments:**
+### `filesnap count`
 
-*   `[PATH]`: Path to scan. [default: current directory]
+Counts all the files by extension in the path selected.
 
-**Options:**
+| Argument | Description | Default |
+|---|---|---|
+| `path` | Path to count | Current directory |
 
-*   `--recursive`: Recursive search to list files in subfolders.
-*   `--pretty`: Pretty table to show all the files. Note: this take more time if the path have a lot files.
+| Option | Alias | Description |
+|---|---|---|
+| `--recursive` | `-r` | Recursive search. |
+| `--exclude` | | Exclude files/directories from counting. |
 
-### `count`
+### `filesnap clean`
 
-Count all the files by extension.
+Cleans the content of a path.
 
-**Usage:**
+| Argument | Description |
+|---|---|
+| `path` | Path to clean |
 
-```bash
-filesnap count [PATH] [OPTIONS] 
-```
+| Option | Alias | Description |
+|---|---|---|
+| `--recursive` | `-r` | Recursive cleaning. |
+| `--contain` | `-c` | Clean only files containing this string. |
+| `--ext` | `-e` | Clean only files with these extensions. |
+| `--exclude` | | Exclude files/directories from cleaning. |
+| `--force` | `-f` | Force deletion without confirmation. |
+| `--dry-run` | `--dry` | Simulate cleaning without deleting files. |
 
-**Arguments:**
+### `filesnap export`
 
-* `[PATH]`: Path to count. [default: current directory]
+Exports the filenames to a file.
 
-**Options:**
+| Argument | Description |
+|---|---|
+| `path` | Path to scan for filenames |
 
-*   `--recursive`: Recursive search to list files in subfolders.
+| Option | Alias | Description |
+|---|---|---|
+| `--type` | `-t` | The type of file to export to (e.g., `txt`, `csv`, `json`). |
+| `--recursive` | `-r` | Recursive scanning. |
+| `--output` | `-o` | The output file name. |
+| `--format` | `-f` | The format of the output. |
+| `--column` | `-c` | The column to export (defaults to `file_name`). |
+
+### `filesnap version`
+
+Prints the version of the tool.
