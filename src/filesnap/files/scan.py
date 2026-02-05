@@ -52,7 +52,6 @@ def scan(
         "exclude": get_exclude_list(exclude),
         "extensions": get_extension_list(extensions),
     }
-    print(scan_options.items())
 
     entries = scandir(path, recursive, **scan_options)
     count = 0
