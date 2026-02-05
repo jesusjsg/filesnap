@@ -65,6 +65,3 @@ Exports the filenames to a file.
 | `--format` | `-f` | The format of the output. |
 | `--column` | `-c` | The column to export (defaults to `file_name`). |
 
-### `filesnap version`
-
-Prints the version of the tool.
