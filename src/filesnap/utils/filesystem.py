@@ -1,10 +1,67 @@
+import csv
+import json
 import os
-from typing import Generator, List, Optional
+import re
+from pathlib import Path
+from typing import Generator, Iterable, List, Optional
 
 import typer
 from rich import print
 
 from filesnap.constants import DEFAULT_LIST_IGNORED
+
+
+def export_file(
+    entries: Iterable,
+    file_type: str,
+    output: str,
+    column_name: str,
+    pattern: Optional[str] = None,
+):
+    regex = re.compile(pattern) if pattern else None
+    file_type = file_type.lower()
+
+    with open(output, "w", newline="", encoding="utf-8") as file:
+        if file_type == "txt":
+            file.write(f"{column_name}\n")
+            for entry in entries:
+                if entry.is_file() and not entry.name.startswith("."):
+                    file_name = Path(entry.name).stem
+                    file.write(
+                        f"{regex.sub('', file_name) if regex else file_name}\n"
+                    )
+
+        if file_type == "csv":
+            writer = csv.writer(file)
+            writer.writerow([column_name])
+            for entry in entries:
+                if entry.is_file() and not entry.name.startswith("."):
+                    file_name = Path(entry.name).stem
+                    writer.writerow(
+                        [
+                            regex.sub("", file_name)
+                            if regex
+                            else file_name
+                        ]
+                    )
+
+        if file_type == "json":
+            file.write("[\n")
+            first = True
+            for entry in entries:
+                if not entry.is_file() or entry.name.startswith("."):
+                    continue
+
+                if not first:
+                    file.write(",\n")
+
+                file_name = Path(entry.name).stem
+                clean_name = (
+                    regex.sub("", file_name) if regex else file_name
+                )
+                json.dump({column_name: clean_name}, file, indent=4)
+                first = False
+            file.write("\n]")
 
 
 def get_extension(file_name: str) -> str:
