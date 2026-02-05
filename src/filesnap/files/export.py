@@ -43,49 +43,41 @@ def export(
 
     # TODO: add the another types files and refactor to a function
     with open(output, "w", newline="") as file:
-        # BUG: firsts elements are being ignored
-        for entry in track_entries:
-            if type == "txt":
-                file.write(f"{column}\n")
-                for entry in track_entries:
-                    if not entry.is_file() or entry.name.startswith(
-                        "."
-                    ):
-                        continue
-                    file_name = Path(entry.name).stem
-                    if format:
-                        file_name = re.sub(format, "", file_name)
-                    file.write(f"{file_name}\n")
+        if type == "txt":
+            file.write(f"{column}\n")
+            for entry in track_entries:
+                if not entry.is_file() or entry.name.startswith("."):
+                    continue
+                file_name = Path(entry.name).stem
+                if format:
+                    file_name = re.sub(format, "", file_name)
+                file.write(f"{file_name}\n")
 
-            if type == "csv":
-                writer = csv.writer(file)
-                writer.writerow([f"{column}"])
-                for entry in track_entries:
-                    if not entry.is_file() or entry.name.startswith(
-                        "."
-                    ):
-                        continue
-                    file_name = Path(entry.name).stem
-                    if format:
-                        file_name = re.sub(format, "", file_name)
-                    writer.writerow([file_name])
+        if type == "csv":
+            writer = csv.writer(file)
+            writer.writerow(f"{column}\n")
+            for entry in track_entries:
+                if not entry.is_file() or entry.name.startswith("."):
+                    continue
+                file_name = Path(entry.name).stem
+                if format:
+                    file_name = re.sub(format, "", file_name)
+                file.write(f"{file_name}\n")
 
-            if type == "json":
-                file.write("[\n")
-                first = True
-                for entry in track_entries:
-                    if not entry.is_file() or entry.name.startswith(
-                        "."
-                    ):
-                        continue
-                    file_name = Path(entry.name).stem
-                    if format:
-                        file_name = re.sub(format, "", file_name)
-                    if not first:
-                        file.write(",\n")
-                    json.dump({column: file_name}, file, indent=4)
-                    first = False
-                file.write("\n]")
+        if type == "json":
+            file.write("[\n")
+            first = True
+            for entry in track_entries:
+                if not entry.is_file() or entry.name.startswith("."):
+                    continue
+                file_name = Path(entry.name).stem
+                if format:
+                    file_name = re.sub(format, "", file_name)
+                if not first:
+                    file.write(",\n")
+                json.dump({column: file_name}, file, indent=4)
+                first = False
+            file.write("\n]")
 
     print(
         f"[green]{type.upper()} file generated successfully[/green] :star:"
