@@ -1,15 +1,18 @@
 [project]
 name = "filesnap"
-version = "0.1.0"
-description = "Hanle all your files easily"
+version = "0.1.1"
+description = "A simple CLI to handle your files"
 readme = "README.md"
-authors = [
-    { name = "jesus", email = "jesusjsgdev@gmail.com" }
-]
-requires-python = ">=3.14"
+requires-python = ">=3.12"
+license-files = ["LICENSE"]
+authors = [{ name = "jesus", email = "jesusjsgdev@gmail.com" }]
+keywords = ["cli", "files"]
 dependencies = [
-    "typer>=0.21.1",
+  "typer>=0.21.1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/jesusjsg/filesnap"
 
 [project.scripts]
 filesnap = "filesnap.main:app"
