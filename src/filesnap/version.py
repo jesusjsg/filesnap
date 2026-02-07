@@ -1,10 +1,18 @@
+from importlib.metadata import PackageNotFoundError, version
+
 import typer
 from rich import print
 
-app = typer.Typer()
 
+def version_callback(value: bool):
+    if value:
+        try:
+            pkg_version = version("filesnap")
+            print(
+                f":pushpin: Filesnap version [green]{pkg_version}[/green]"
+            )
 
-@app.command()
-def version():
-    """Get the current version"""
-    print(":pushpin: Filesnap version [green]0.1.0[/green]")
+        except PackageNotFoundError:
+            print(":error: Unknown filesnap version")
+
+        raise typer.Exit()
