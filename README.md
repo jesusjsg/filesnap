@@ -2,6 +2,18 @@
 
 `filesnap` is a command-line tool for managing files and directories.
 
+## Installation
+
+you can install it globally using uv by [astral](https://github.com/astral-sh/uv)
+```bash
+uv tool install filesnap
+```
+
+or with pip
+```bash
+pip3 install filesnap
+```
+
 ## Commands
 
 ### `filesnap scan`
