@@ -6,9 +6,9 @@
 filesnap was born out of necessity in a professional production environment. Dealing with massive directory structures and thousands of assets manually is error-prone and slow.
 
 I built this tool to:
-    - Automate Database Seeding: Quickly export entire folders of images or assets into structured formats (CSV, JSON) to sync filenames with database records.
-    - Bulk Audit: Count and scan files by extension.
-    - Smart Cleanup: Safely prune specific file types or filenames across nested directories using --dry-run to prevent accidental data loss.
+- Automate Database Seeding: Quickly export entire folders of images or assets into structured formats (CSV, JSON) to sync filenames with database records.
+- Bulk Audit: Count and scan files by extension.
+- Smart Cleanup: Safely prune specific file types or filenames across nested directories using --dry-run to prevent accidental data loss.
 
 ## Installation
 
