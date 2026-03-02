@@ -3,6 +3,7 @@ from typing import Annotated
 import typer
 
 from filesnap.files import app as files_app
+from filesnap.images import app as images_app
 from filesnap.version import version_callback
 
 app = typer.Typer(
@@ -12,6 +13,7 @@ app = typer.Typer(
 )
 
 app.add_typer(files_app)
+app.add_typer(images_app)
 
 
 @app.callback()
