@@ -85,3 +85,22 @@ Exports the filenames to a file.
 | `--format` | `-f` | The format of the output. |
 | `--column` | `-c` | The column to export (defaults to `file_name`). |
 
+### `filesnap compress`
+
+Compresses all the images in the path selected with different formats.
+
+| Argument | Description |
+|---|---|
+| `source_path` | Path to images to compress |
+| `destination_path` | Path to save compressed images |
+
+| Option | Alias | Description |
+|---|---|---|
+| `--current-format` | `-c` | The format of the images to compress. |
+| `--new-format` | `-n` | The format to convert the images to. |
+| `--quality` | `-q` | The quality of the compressed images (60-100). |
+
+## Roadmap
+
+- Core functionality currently using the `os` module will be refactored to use `pathlib.Path` in the future for better cross-platform compatibility and cleaner code.
+
