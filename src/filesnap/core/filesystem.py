@@ -2,11 +2,7 @@ import fnmatch
 from pathlib import Path
 from typing import Generator, Set
 
-import typer
-from rich import print
 
-
-# TODO: Implement new scandir with pathlib nad yield Path objects
 def scandir(path: Path, **kwargs) -> Generator[Path, None, None]:
     recursive: bool = kwargs.get("recursive", False)
     valid_extensions: Set[str] = kwargs.get("extensions", set())
@@ -37,11 +33,3 @@ def scandir(path: Path, **kwargs) -> Generator[Path, None, None]:
             pass
 
     yield from _scan_directory(path)
-
-
-def validate_path_exist(path: Path) -> None:
-    if not path.exists():
-        print(
-            f"[bold red]Error:[/bold red] The path [yellow]{path}[/yellow] dosen't exist!"
-        )
-        raise typer.Exit(code=1)
