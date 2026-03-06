@@ -6,7 +6,7 @@ import typer
 from rich import print
 
 from filesnap.utils.filesystem import (
-    get_exclude_list,
+    # get_exclude_list,
     get_extension_list,
     scandir,
     validate_path_exist,
@@ -53,7 +53,7 @@ def clean(
         )
 
     scan_options = {
-        "exclude": get_exclude_list(exclude),
+        # "exclude": get_exclude_list(exclude),
         "extensions": get_extension_list(extensions),
         "contain": contain,
     }

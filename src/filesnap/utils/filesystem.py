@@ -8,7 +8,7 @@ from typing import Generator, Iterable, List, Optional
 import typer
 from rich import print
 
-from filesnap.constants import DEFAULT_LIST_IGNORED
+# from filesnap.constants import DEFAULT_LIST_IGNORED
 
 
 def export_file(
@@ -69,16 +69,16 @@ def get_extension(file_name: str) -> str:
     return ext.lower() if ext else "Invalid extension"
 
 
-def get_exclude_list(exclude_names: Optional[List[str]]) -> set[str]:
-    final_ignores = set(DEFAULT_LIST_IGNORED)
-
-    if exclude_names:
-        for item in exclude_names:
-            user_list = [
-                file.strip() for file in item.split(",") if item.strip()
-            ]
-        final_ignores.update(user_list)
-    return final_ignores
+# def get_exclude_list(exclude_names: Optional[List[str]]) -> set[str]:
+#     final_ignores = set(DEFAULT_LIST_IGNORED)
+#
+#     if exclude_names:
+#         for item in exclude_names:
+#             user_list = [
+#                 file.strip() for file in item.split(",") if item.strip()
+#             ]
+#         final_ignores.update(user_list)
+#     return final_ignores
 
 
 def get_extension_list(extensions: Optional[List[str]]) -> set[str]:
