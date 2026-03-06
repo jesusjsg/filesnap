@@ -5,6 +5,8 @@ import typer
 from PIL import Image
 from rich import print
 
+from filesnap.core.validators import validate_destination_path
+
 app = typer.Typer()
 
 
@@ -38,8 +40,7 @@ def compress(
 
     count = 0
 
-    if not destination_path.exists():
-        destination_path.mkdir(parents=True)
+    validate_destination_path(destination_path)
 
     for entry in source_path.glob(f"*.{current_format}"):
         compress_images(
