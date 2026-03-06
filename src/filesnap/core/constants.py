@@ -1,4 +1,4 @@
-"""I don't know if this is the best approach"""
+# TODO: Add a way to add custom ignored files from a user file
 
 DEFAULT_LIST_IGNORED = [
     "node_modules",
