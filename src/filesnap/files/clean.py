@@ -1,16 +1,15 @@
-import os
-import shutil
-from typing import Annotated, List, Optional
+from pathlib import Path
+from typing import Annotated, List
 
 import typer
 from rich import print
 
-from filesnap.utils.filesystem import (
-    # get_exclude_list,
+from filesnap.core.filesystem import (
+    get_exclude_list,
     get_extension_list,
     scandir,
-    validate_path_exist,
 )
+from filesnap.core.validators import validate_source_path
 from filesnap.utils.formatting import task_progress
 
 app = typer.Typer()
@@ -18,73 +17,90 @@ app = typer.Typer()
 
 @app.command()
 def clean(
-    path: str,
+    path: Annotated[
+        Path, typer.Argument(help="Path to clean")
+    ] = Path.cwd(),
     recursive: Annotated[
-        bool, typer.Option("--recursive", "-r")
+        bool,
+        typer.Option("--recursive", "-r", help="Recursive cleaning."),
     ] = False,
-    contain: Annotated[str, typer.Option("--contain", "-c")] = "",
+    contain: Annotated[
+        str,
+        typer.Option(
+            "--contain",
+            "-c",
+            help="Clean only files containing this string.",
+        ),
+    ] = "",
     extensions: Annotated[
-        Optional[List[str]], typer.Option("--ext", "-e")
-    ] = None,
-    exclude: Annotated[Optional[List[str]], typer.Option()] = None,
-    force: Annotated[bool, typer.Option("--force", "-f")] = False,
+        List[str],
+        typer.Option(
+            "--ext",
+            "-e",
+            help="Clean only files with these extensions.",
+        ),
+    ] = [],
+    exclude: Annotated[
+        List[str],
+        typer.Option(help="Exclude files/directories from cleaning."),
+    ] = [],
+    force: Annotated[
+        bool,
+        typer.Option(
+            "--force", "-f", help="Force deletion without confirmation."
+        ),
+    ] = False,
     dry_run: Annotated[
-        bool, typer.Option("--dry-run", "--dry")
+        bool,
+        typer.Option(
+            "--dry-run",
+            help="Simulate cleaning without deleting files.",
+        ),
     ] = False,
 ):
     """Clean the content of the path"""
-    validate_path_exist(path)
+    validate_source_path(path)
 
-    if not dry_run:
-        if force:
-            typer.confirm(
-                f"Are you sure you want to delete the entire {path}?",
-                abort=True,
-            )
-            shutil.rmtree(path)
-            print(
-                f"[green]The directory {path} was removed successfully![/green]"
-            )
-            raise typer.Exit()
-
+    if not dry_run and not force:
         typer.confirm(
-            "Are you sure you want to delete the content of the path?",
+            f"Are you sure you want to delete content in {path} matching your filters?",
             abort=True,
         )
 
     scan_options = {
-        # "exclude": get_exclude_list(exclude),
         "extensions": get_extension_list(extensions),
+        "exclude": get_exclude_list(exclude),
         "contain": contain,
+        "recursive": recursive,
     }
 
-    entries = scandir(path, recursive, **scan_options)
-
+    entries = list(scandir(path, **scan_options))
     track_entries = task_progress(
         entries, description="Cleaning content..."
     )
 
     count = 0
-
     for entry in track_entries:
-        count += 1
         try:
             if dry_run:
                 print(
-                    f"[yellow][DRY RUN][/yellow] Would remove: [white]{entry.path}[/white]"
+                    f"[yellow][DRY RUN][/yellow] Would remove: [white]{entry}[/white]"
                 )
+                count += 1
                 continue
 
             if entry.is_file() or entry.is_symlink():
-                os.remove(entry)
-            elif entry.is_dir():
-                if not contain:
-                    os.rmdir(entry.path)
-        except OSError:
-            pass
+                entry.unlink()
+                count += 1
+            elif entry.is_dir() and not any(entry.iterdir()):
+                entry.rmdir()
+                count += 1
+        except OSError as e:
+            print(f"[red]Error removing {entry}: {e}[/red]")
+
     message = (
-        f"Dry run completed! {count} total files affected"
+        f"Dry run completed! {count} total items would be affected"
         if dry_run
-        else "The content of the path was removed successfully!"
+        else f"Cleaned {count} items successfully!"
     )
     print(f"[green]{message}[/green]")

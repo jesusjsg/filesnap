@@ -7,11 +7,8 @@ from rich.console import Console
 from rich.filesize import decimal
 from rich.table import Table
 
-from filesnap.core.filesystem import scandir
+from filesnap.core.filesystem import get_exclude_list, scandir
 from filesnap.core.validators import validate_source_path
-from filesnap.utils.filesystem import (
-    get_extension,
-)
 from filesnap.utils.formatting import task_progress
 
 app = typer.Typer()
@@ -27,7 +24,10 @@ def count(
         bool,
         typer.Option("--recursive", "-r", help="Recursive search."),
     ] = False,
-    exclude: Annotated[List[str], typer.Option()] = [],
+    exclude: Annotated[
+        List[str],
+        typer.Option(help="Exclude files/directories from counting."),
+    ] = [],
 ):
     """Count all the files by extension in the path selected"""
 
@@ -35,6 +35,7 @@ def count(
 
     scan_options = {
         "recursive": recursive,
+        "exclude": get_exclude_list(exclude),
     }
 
     info_stats = defaultdict(lambda: {"size": 0, "count": 0})
@@ -47,7 +48,7 @@ def count(
 
     for entry in track_entries:
         if entry.is_file():
-            ext = get_extension(entry.name)
+            ext = entry.suffix.lower() or "no-extension"
             file_info = entry.stat()
 
             info_stats[ext]["size"] += file_info.st_size
