@@ -39,6 +39,11 @@ Scans all the files in the path.
 | `--exclude` | | Exclude files/directories from scanning. |
 | `--ext` | `-e` | Scan only files with these extensions. |
 
+**Example:**
+```bash
+filesnap scan ./src --recursive --ext .py --exclude __pycache__
+```
+
 ### `filesnap count`
 
 Counts all the files by extension in the path selected.
@@ -51,6 +56,11 @@ Counts all the files by extension in the path selected.
 |---|---|---|
 | `--recursive` | `-r` | Recursive search. |
 | `--exclude` | | Exclude files/directories from counting. |
+
+**Example:**
+```bash
+filesnap count ./assets --recursive
+```
 
 ### `filesnap clean`
 
@@ -69,6 +79,11 @@ Cleans the content of a path.
 | `--force` | `-f` | Force deletion without confirmation. |
 | `--dry-run` | `--dry` | Simulate cleaning without deleting files. |
 
+**Example:**
+```bash
+filesnap clean ./temp --ext .log --force
+```
+
 ### `filesnap export`
 
 Exports the filenames to a file.
@@ -85,6 +100,11 @@ Exports the filenames to a file.
 | `--format` | `-f` | The format of the output. |
 | `--column` | `-c` | The column to export (defaults to `file_name`). |
 
+**Example:**
+```bash
+filesnap export ./images --type json --output manifest.json --recursive
+```
+
 ### `filesnap compress`
 
 Compresses all the images in the path selected with different formats.
@@ -96,11 +116,11 @@ Compresses all the images in the path selected with different formats.
 
 | Option | Alias | Description |
 |---|---|---|
-| `--current-format` | `-c` | The format of the images to compress. |
-| `--new-format` | `-n` | The format to convert the images to. |
+| `--current-format` | `-f` | The format of the images to compress. |
+| `--new-format` | `-t` | The format to convert the images to. |
 | `--quality` | `-q` | The quality of the compressed images (60-100). |
 
-## Roadmap
-
-- Core functionality currently using the `os` module will be refactored to use `pathlib.Path` in the future for better cross-platform compatibility and cleaner code.
-
+**Example:**
+```bash
+filesnap compress ./raw ./optimized -f png -t jpg --quality 85
+```
