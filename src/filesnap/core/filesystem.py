@@ -2,6 +2,8 @@ import fnmatch
 from pathlib import Path
 from typing import Generator, Set
 
+from PIL import Image
+
 
 def scandir(path: Path, **kwargs) -> Generator[Path, None, None]:
     recursive: bool = kwargs.get("recursive", False)
@@ -33,3 +35,19 @@ def scandir(path: Path, **kwargs) -> Generator[Path, None, None]:
             pass
 
     yield from _scan_directory(path)
+
+
+def get_extension(file_name: Path) -> str:
+    if not file_name.is_file():
+        return "Invalid extension"
+
+    return file_name.suffix.lower()
+
+
+def compress_images(
+    source_path: Path, destination_path: Path, quality: int
+) -> None:
+    with Image.open(source_path) as img:
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+        img.save(destination_path, optimize=True, quality=quality)
