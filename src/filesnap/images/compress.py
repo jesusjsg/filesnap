@@ -19,10 +19,10 @@ def compress(
     source_path: Annotated[Path, typer.Argument(help="Path to images to compress")],
     destination_path: Annotated[Path, typer.Argument(help="Path to save compressed images")],
     current_format: Annotated[
-        str, typer.Option("--current-format", "-c", help="The format of the images to compress.")
+        str, typer.Option("--current-format", "-f", help="The format of the images to compress.")
     ] = "png",
     new_format: Annotated[
-        str, typer.Option("--new-format", "-n", help="The format to convert the images to.")
+        str, typer.Option("--new-format", "-t", help="The format to convert the images to.")
     ] = "jpg",
     quality: Annotated[
         int, typer.Option("--quality", "-q", help="The quality of the compressed images (0-100).")
