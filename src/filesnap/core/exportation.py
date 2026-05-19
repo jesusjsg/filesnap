@@ -33,7 +33,7 @@ def export_file(
                     full_name = entry.name
                     modified = format_date(entry.stat().st_mtime)
                     file.write(
-                        f"{clean_name} | {full_name} | {modified}\n"
+                        f"{clean_name} - {full_name} - {modified}\n"
                     )
 
         elif file_type == "csv":
