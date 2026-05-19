@@ -6,16 +6,17 @@ from typing import Iterable, Optional
 
 from rich import print
 
+from filesnap.utils.formatting import format_date
+
 
 def export_file(
     entries: Iterable[Path],
     file_type: str,
     output: str,
-    column_name: str,
     pattern: Optional[str] = None,
 ):
     """
-    Exports filenames from a collection of pathlib.Path entries to a file.
+    Exports file metadata from a collection of pathlib.Path entries to a file.
     Only includes files and excludes hidden files.
     """
     regex = re.compile(pattern) if pattern else None
@@ -24,35 +25,43 @@ def export_file(
 
     with open(output_path, "w", newline="", encoding="utf-8") as file:
         if file_type == "txt":
-            file.write(f"{column_name}\n")
+            file.write("name - full_name - modified\n")
             for entry in entries:
                 if entry.is_file() and not entry.name.startswith("."):
-                    file_name = entry.stem
-                    clean_name = (
-                        regex.sub("", file_name) if regex else file_name
+                    name = entry.stem
+                    clean_name = regex.sub("", name) if regex else name
+                    full_name = entry.name
+                    modified = format_date(entry.stat().st_mtime)
+                    file.write(
+                        f"{clean_name} | {full_name} | {modified}\n"
                     )
-                    file.write(f"{clean_name}\n")
 
         elif file_type == "csv":
             writer = csv.writer(file)
-            writer.writerow([column_name])
+            writer.writerow(["name", "full_name", "modified"])
             for entry in entries:
                 if entry.is_file() and not entry.name.startswith("."):
-                    file_name = entry.stem
-                    clean_name = (
-                        regex.sub("", file_name) if regex else file_name
-                    )
-                    writer.writerow([clean_name])
+                    name = entry.stem
+                    clean_name = regex.sub("", name) if regex else name
+                    full_name = entry.name
+                    modified = format_date(entry.stat().st_mtime)
+                    writer.writerow([clean_name, full_name, modified])
 
         elif file_type == "json":
             data = []
             for entry in entries:
                 if entry.is_file() and not entry.name.startswith("."):
-                    file_name = entry.stem
-                    clean_name = (
-                        regex.sub("", file_name) if regex else file_name
+                    name = entry.stem
+                    clean_name = regex.sub("", name) if regex else name
+                    full_name = entry.name
+                    modified = format_date(entry.stat().st_mtime)
+                    data.append(
+                        {
+                            "name": clean_name,
+                            "full_name": full_name,
+                            "modified": modified,
+                        }
                     )
-                    data.append({column_name: clean_name})
 
             json.dump(data, file, indent=4)
         else:

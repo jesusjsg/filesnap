@@ -41,14 +41,8 @@ def export(
             help="The format of the output (regex to remove).",
         ),
     ] = None,
-    column: Annotated[
-        str,
-        typer.Option(
-            "--column", "-c", help="The column/header to export."
-        ),
-    ] = "file_name",
 ):
-    """Export the filename to a file (txt, csv, or json)"""
+    """Export file metadata to a file (txt, csv, or json)"""
     validate_source_path(path)
 
     if output is None:
@@ -63,7 +57,6 @@ def export(
         entries=track_entries,
         file_type=type,
         output=output,
-        column_name=column,
         pattern=format,
     )
 

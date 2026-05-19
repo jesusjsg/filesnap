@@ -86,19 +86,18 @@ filesnap clean ./temp --ext .log --force
 
 ### `filesnap export`
 
-Exports the filenames to a file.
+Exports file metadata (name, full name, and modified date) to a file.
 
 | Argument | Description |
 |---|---|
-| `path` | Path to scan for filenames |
+| `path` | Path to scan for files |
 
 | Option | Alias | Description |
 |---|---|---|
 | `--type` | `-t` | The type of file to export to (e.g., `txt`, `csv`, `json`). |
 | `--recursive` | `-r` | Recursive scanning. |
 | `--output` | `-o` | The output file name. |
-| `--format` | `-f` | The format of the output. |
-| `--column` | `-c` | The column to export (defaults to `file_name`). |
+| `--format` | `-f` | The format of the output (regex to remove). |
 
 **Example:**
 ```bash
